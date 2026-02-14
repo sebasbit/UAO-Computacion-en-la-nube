@@ -1,0 +1,16 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "errosica/DeepLearning"
+  config.vm.box_version = "0.0.4"
+  config.vm.hostname = "tensorflowVM"
+end
+
+# Vagrant.configure("2") do |config|
+#   config.vm.define :tensorflowVM do |tensorflowVM|
+#     tensorflowVM.vm.box = "errosica/DeepLearning"
+#     tensorflowVM.vm.network :private_network, ip: "192.168.100.4"
+#     tensorflowVM.vm.hostname = "tensorflowVM"
+#   end
+# end
