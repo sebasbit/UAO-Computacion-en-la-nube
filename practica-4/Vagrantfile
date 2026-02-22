@@ -1,0 +1,27 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.define :loadBalancer do |loadBalancer|
+    loadBalancer.vm.box = "bento/ubuntu-22.04"
+    loadBalancer.vm.hostname = "loadBalancer"
+    loadBalancer.vm.network :private_network, ip: "192.168.100.6"
+    loadBalancer.vm.provision "shell", path: "provision_haproxy.sh"
+  end
+
+  config.vm.define :sitioUno do |sitioUno|
+    sitioUno.vm.box = "bento/ubuntu-22.04"
+    sitioUno.vm.hostname = "sitioUno"
+    sitioUno.vm.network :private_network, ip: "192.168.100.7"
+    sitioUno.vm.provision "shell", path: "provision_web.sh"
+  end
+
+  config.vm.define :sitioDos do |sitioDos|
+    sitioDos.vm.box = "bento/ubuntu-22.04"
+    sitioDos.vm.hostname = "sitioDos"
+    sitioDos.vm.network :private_network, ip: "192.168.100.8"
+    sitioDos.vm.provision "shell", path: "provision_web.sh"
+  end
+
+end

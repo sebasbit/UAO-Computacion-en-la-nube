@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screensaver</title>
+
+    <style>
+        body {
+            margin: 0;
+        }
+        #screen {
+            min-width: 100vw;
+            min-height: 100vh;
+            position: relative;
+            background-color: lightblue;
+        }
+        #screensaver {
+            width: 75px;
+            height: 50px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: purple;
+            color: white;
+            border-radius: 25px;
+            font-family: cursive;
+        }
+        #btn-play {
+            padding: 15px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #0000FF;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-family: cursive;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="screen">
+        <div id="screensaver">
+            <strong>DVD</strong>
+        </div>
+    </div>
+
+    <button id="btn-play">
+        <strong>Play/Stop</strong>
+    </button>
+
+    <script>
+        window.onload = e => {
+            const screensaver = {
+                mX: -1,
+                mY: -1,
+                started: false,
+                intervalId: 0,
+                screen: document.getElementById("screen"),
+                screensaver: document.getElementById("screensaver"),
+                moveScreen: function() {
+                    const changeX =
+                        ((this.screensaver.offsetTop + this.screensaver.offsetHeight) >= this.screen.offsetHeight)
+                        || ((this.screensaver.offsetTop - 1) < 0);
+
+                    const changeY =
+                        ((this.screensaver.offsetLeft + this.screensaver.offsetWidth) >= this.screen.offsetWidth)
+                        || ((this.screensaver.offsetLeft - 1) < 0);
+
+                    if (changeX) { this.mX = this.mX * -1; }
+                    if (changeY) { this.mY = this.mY * -1; }
+
+                    this.screensaver.style.top = (this.screensaver.offsetTop + this.mX) + "px";
+                    this.screensaver.style.left = (this.screensaver.offsetLeft + this.mY) + "px";
+                },
+                startAnimation: function() {
+                    if (!this.started) {
+                        this.intervalId = setInterval(() => this.moveScreen(), 10);
+                    } else {
+                        clearInterval(this.intervalId);
+                    }
+                    this.started = !this.started
+                }
+            }
+
+            document.getElementById("btn-play").onclick = e => screensaver.startAnimation();
+        }
+    </script>
+</body>
+
+</html>
