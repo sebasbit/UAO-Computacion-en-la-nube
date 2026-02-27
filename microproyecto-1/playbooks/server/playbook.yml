@@ -1,0 +1,68 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Actualizar repositorios
+      apt:
+        update_cache: yes
+
+    - name: Instalar Node.js
+      shell: |
+        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+        apt install -y nodejs
+
+    - name: Instalar Consul
+      shell: |
+        wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+        apt update -y
+        apt install -y consul=1.22.3-1
+
+    - name: Crear directorios requeridos
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /etc/consul.d
+        - /opt/app
+        - /opt/consul
+
+    - name: Mover archivos desde /tmp a su destino final
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        remote_src: yes
+      loop:
+        - { src: "/tmp/consul.hcl", dest: "/etc/consul.d/consul.hcl" }
+        - { src: "/tmp/server.js", dest: "/opt/app/server.js" }
+        - { src: "/tmp/consul.service", dest: "/etc/systemd/system/consul.service" }
+
+    - name: Inicializar proyecto Node e instalar dependencias
+      shell: |
+        cd /opt/app
+        npm install express consul
+
+    # - name: Ejecutar Consul en background
+    #   shell: nohup consul agent -config-dir=/etc/consul.d/ > /var/log/consul.log 2>&1 &
+    #   async: 10
+    #   poll: 0
+
+    - name: Crear comando start-node-server para el usuario vagrant
+      blockinfile:
+        path: /home/vagrant/.bashrc
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - ALIAS START NODE SERVER"
+        block: |
+          start-node-server() {
+            if [ -z "$1" ]; then
+              echo "Uso: start-node-server [puerto]"
+              return 1
+            fi
+            node /opt/app/server.js $(hostname -I | awk '{print $2}') "$1"
+          }
+
+    - name: Habilitar e iniciar el servicio de Consul
+      systemd:
+        name: consul
+        state: restarted
+        enabled: yes
+        daemon_reload: yes

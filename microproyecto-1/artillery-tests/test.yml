@@ -1,0 +1,25 @@
+config:
+  target: "http://192.168.100.8" # HAProxy
+  phases:
+    - duration: 30
+      arrivalRate: 5
+      name: "Fase 1: Tráfico Normal"
+      
+    - duration: 30
+      arrivalRate: 5
+      rampTo: 50
+      name: "Fase 2: Incremento gradual de carga"
+      
+    - duration: 20
+      arrivalRate: 300
+      name: "Fase 3: Pico de tráfico severo"
+      
+    - duration: 10
+      arrivalRate: 6000
+      name: "Fase 4: DDoS"
+
+scenarios:
+  - name: "Petición GET a la página principal"
+    flow:
+      - get:
+          url: "/"

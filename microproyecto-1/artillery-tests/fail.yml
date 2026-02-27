@@ -1,0 +1,18 @@
+config:
+  target: "http://192.168.100.8" # HAProxy VM
+  phases:
+    - duration: 30
+      arrivalRate: 1000
+      name: "Carga alta"
+    - duration: 15
+      arrivalRate: 10000
+      name: "DDoS"
+  defaults:
+    headers:
+      User-Agent: "artillery"
+
+scenarios:
+  - name: "GET /"
+    flow:
+      - get:
+          url: "/"

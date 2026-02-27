@@ -1,0 +1,28 @@
+---
+- name: Configurar HAProxy
+  hosts: all
+  become: yes
+  tasks:
+    - name: Instalar HAProxy
+      apt:
+        name: haproxy
+        state: present
+        update_cache: yes
+
+    - name: Mover página de error personalizada
+      copy:
+        src: /tmp/503.http
+        dest: /etc/haproxy/errors/503.http
+        remote_src: yes
+
+    - name: Mover configuración principal de HAProxy
+      copy:
+        src: /tmp/haproxy.cfg
+        dest: /etc/haproxy/haproxy.cfg
+        remote_src: yes
+
+    - name: Reiniciar servicio HAProxy
+      systemd:
+        name: haproxy
+        state: restarted
+        enabled: yes
