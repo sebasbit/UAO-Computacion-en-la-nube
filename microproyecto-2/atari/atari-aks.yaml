@@ -1,0 +1,40 @@
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: app-atari-game
+# ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atari-game
+  # namespace: app-atari-game
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: atari-game
+  template:
+    metadata:
+      labels:
+        app: atari-game
+    spec:
+      containers:
+      - name: web-server
+        image: seb4sbit/atari-game:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: atari-service
+  # namespace: app-atari-game
+spec:
+  type: LoadBalancer
+  selector:
+    app: atari-game
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

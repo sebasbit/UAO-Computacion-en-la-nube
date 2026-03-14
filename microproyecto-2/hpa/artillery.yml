@@ -1,0 +1,37 @@
+# config:
+#   target: "http://192.168.100.3:30001"
+  
+#   phases:
+#     - duration: 15
+#       arrivalRate: 5
+#       name: "Carga Base"
+      
+#     - duration: 90
+#       arrivalRate: 500
+#       rampTo: 1000
+#       name: "Escalado (Pico)"
+      
+#     - duration: 15
+#       arrivalRate: 5
+#       name: "Desescalado"
+
+# scenarios:
+#   - name: "Prueba de estrés via Vagrant"
+#     flow:
+#       - get:
+#           url: "/"
+
+config:
+  target: "http://192.168.100.3:30001"
+
+  phases:
+    - duration: 60
+      arrivalRate: 1
+      # rampTo: 2
+      name: "Fase de Estrés Intenso"
+      
+scenarios:
+  - name: "Cálculo de Fibonacci"
+    flow:
+      - get:
+          url: "/stress"

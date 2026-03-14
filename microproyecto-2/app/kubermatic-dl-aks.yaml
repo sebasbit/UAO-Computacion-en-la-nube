@@ -1,0 +1,40 @@
+#   apiVersion: v1
+#   kind: Namespace
+#   metadata:
+#     name: app-kubermatic-dl
+# ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubermatic-dl-deployment
+  # namespace: app-kubermatic-dl
+spec:
+  selector:
+    matchLabels:
+      app: kubermatic-dl
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kubermatic-dl
+    spec:
+     containers:
+     - name: kubermatic-dl
+       image: seb4sbit/kubermatic-dl:latest
+       imagePullPolicy: Always
+       ports:
+       - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubermatic-dl-service
+  # namespace: app-kubermatic-dl
+spec:
+  type: LoadBalancer
+  selector:
+    app: kubermatic-dl
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
